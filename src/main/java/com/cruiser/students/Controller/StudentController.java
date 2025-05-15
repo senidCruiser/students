@@ -10,18 +10,15 @@ import com.cruiser.students.Util.StandardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@RestController("/student")
+@RestController("/students")
 public class StudentController {
 
     @Autowired
     StudentService studentService;
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<StandardResponse> getAllStudents(){
 
         StudentPackResponseDTO students = studentService.getAllStudents();
@@ -32,9 +29,9 @@ public class StudentController {
         );
     }
 
-    @PostMapping("/byId")
-    public ResponseEntity<StandardResponse> getById(@RequestBody IdBasedRequestDTO idBasedRequestDTO){
-        OneStudentResponseDTO oneStudentResponseDTO = studentService.findStudent(idBasedRequestDTO);
+    @PostMapping("/{id}")
+    public ResponseEntity<StandardResponse> getById(@PathVariable String id){
+        OneStudentResponseDTO oneStudentResponseDTO = studentService.findStudent(new IdBasedRequestDTO(id));
         return new ResponseEntity<>(
                 new StandardResponse(200, "acknowledged", oneStudentResponseDTO),
                 HttpStatus.OK
@@ -47,16 +44,18 @@ public class StudentController {
         OneStudentResponseDTO oneStudentResponseDTO = studentService.saveStudent(studentCreationRequestDTO);
 
         return new ResponseEntity<>(
-                new StandardResponse(200, "acknowledged", oneStudentResponseDTO),
+                new StandardResponse(201, "acknowledged", oneStudentResponseDTO),
                 HttpStatus.OK
         );
     }
 
-    @PostMapping("/delete")
-    public ResponseEntity<StandardResponse> deleteStudent(){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<StandardResponse> deleteStudent(@PathVariable String id){
+
+        studentService.deleteStudent(new IdBasedRequestDTO(id));
 
         return new ResponseEntity<>(
-                StandardResponse.builder().Code(200).message("acknowledged").build(),
+                StandardResponse.builder().Code(204).message("acknowledged").build(),
                 HttpStatus.OK
         );
     }
