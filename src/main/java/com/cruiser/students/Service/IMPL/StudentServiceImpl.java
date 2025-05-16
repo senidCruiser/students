@@ -1,49 +1,59 @@
 package com.cruiser.students.Service.IMPL;
 
 import com.cruiser.students.DTO.Mapper.StudentMapper;
-import com.cruiser.students.DTO.Request.IdBasedRequestDTO;
 import com.cruiser.students.DTO.Request.StudentCreationRequestDTO;
-import com.cruiser.students.DTO.Response.OneStudentResponseDTO;
-import com.cruiser.students.DTO.Response.StudentPackResponseDTO;
+import com.cruiser.students.DTO.Response.StudentResponseDTO;
 import com.cruiser.students.Entity.Student;
 import com.cruiser.students.Exception.ResourceNotFoundException;
 import com.cruiser.students.Repo.StudentRepository;
 import com.cruiser.students.Service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class StudentServiceImpl implements StudentService {
+
+    private static final Logger log = LoggerFactory.getLogger(StudentServiceImpl.class);
 
     @Autowired
     private StudentRepository studentRepository;
 
     @Override
-    public StudentPackResponseDTO getAllStudents() {
-        return new StudentPackResponseDTO(studentRepository.findAll());
+    public List<StudentResponseDTO> getAllStudents() {
+        List<Student> students = studentRepository.findAll();
+        log.debug("send the list of student: {}", students);
+        return StudentMapper.studentListToStudentResponseDTOList(students);
     }
 
     @Override
-    public OneStudentResponseDTO findStudent(IdBasedRequestDTO idBasedRequestDTO) {
+    public StudentResponseDTO findStudent(String id) {
 
-        Student student = studentRepository.findById(idBasedRequestDTO.id()).orElseThrow(() ->
-                new ResourceNotFoundException("Student not found with id " + idBasedRequestDTO.id()));
+        Student student = studentRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Student not found with id " + id));
 
-        return new OneStudentResponseDTO(student);
+        log.debug("retrieve student with id: {}",student.getId());
+
+        return StudentMapper.studentToStudentResponseDTO(student);
     }
 
     @Override
-    public OneStudentResponseDTO saveStudent(StudentCreationRequestDTO studentCreationRequestDTO) {
+    public StudentResponseDTO saveStudent(StudentCreationRequestDTO studentCreationRequestDTO) {
 
-        return new OneStudentResponseDTO(studentRepository.save(StudentMapper.DataToStudent(studentCreationRequestDTO)));
+        Student savedstudent= studentRepository.save(StudentMapper.studentCreationRequestDTOToStudent(studentCreationRequestDTO));
+        log.debug("Save student: {}", savedstudent);
+
+        return StudentMapper.studentToStudentResponseDTO(savedstudent);
     }
 
     @Override
-    public void deleteStudent(IdBasedRequestDTO idBasedRequestDTO) {
-        studentRepository.deleteById(idBasedRequestDTO.id());
+    public void deleteStudent(String id) {
+
+        studentRepository.deleteById(id);
+        log.debug("Student deletion complete");
     }
 
 

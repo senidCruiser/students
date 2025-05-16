@@ -21,5 +21,13 @@ public class Student {
     private Date DOB;
     private double average;
 
-
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", DOB=" + DOB +
+                ", average=" + average +
+                '}';
+    }
 }

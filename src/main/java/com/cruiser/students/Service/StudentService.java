@@ -1,18 +1,19 @@
 package com.cruiser.students.Service;
 
-import com.cruiser.students.DTO.Request.IdBasedRequestDTO;
 import com.cruiser.students.DTO.Request.StudentCreationRequestDTO;
-import com.cruiser.students.DTO.Response.OneStudentResponseDTO;
+import com.cruiser.students.DTO.Response.StudentResponseDTO;
 import com.cruiser.students.DTO.Response.StudentPackResponseDTO;
+
+import java.util.List;
 
 public interface StudentService {
 
 
-    StudentPackResponseDTO getAllStudents();
+    List<StudentResponseDTO> getAllStudents();
 
-    OneStudentResponseDTO findStudent(IdBasedRequestDTO idBasedRequestDTO);
+    StudentResponseDTO findStudent(String id);
 
-    OneStudentResponseDTO saveStudent(StudentCreationRequestDTO studentCreationRequestDTO);
+    StudentResponseDTO saveStudent(StudentCreationRequestDTO studentCreationRequestDTO);
 
-    void deleteStudent(IdBasedRequestDTO idBasedRequestDTO);
+    void deleteStudent(String id);
 }
